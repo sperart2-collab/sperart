@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-const links = [["What we do", "#what"], ["About", "#about"], ["Contact", "#contact"]];
-export default function Header() {
+const links = [["What we do", "/#what"], ["About", "/about"], ["Membership", "/membership"], ["Contact", "/#contact"]];
+export default function Header({ solid = false }: { solid?: boolean }) {
   const [o, setO] = useState(false);
   return (
-    <header className="site fixed inset-x-0 top-0 z-50">
+    <header className={`site ${solid ? "solid " : ""}fixed inset-x-0 top-0 z-50`}>
       <div className="flex items-center justify-between px-5 py-3 md:px-12">
         <a href="/" className="flex items-center gap-2"><img src="/emblem.png" alt="" className="h-9 w-auto" /><span className="font-semibold tracking-[.2em]">SPERART</span></a>
         <nav className="hidden items-center gap-8 text-sm md:flex">

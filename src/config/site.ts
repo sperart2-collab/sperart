@@ -2,8 +2,9 @@
 export const site = {
   name: "SPERART",
   domain: "sperart.org",
+  fullName: "Society of Percussive Art",
   missionPlaceholder:
-    "SPERART celebrates percussion and rhythm as a living cultural art form, through education, performance, community and research. [Placeholder: replace with the official SPERART mission statement.]",
+    "SPERART is a society for the percussive arts, bringing together percussionists, educators, students and lovers of percussion music through education, performance, community and research. [Placeholder: replace with the official SPERART mission statement.]",
   contact: {
     address: "2 Victor Raphael, Greenfield Estate, Ago Palace Way, Okota, Lagos",
     email: "topejaiyesimi.tj@gmail.com",

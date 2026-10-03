@@ -32,7 +32,7 @@ export default function Spar() {
   async function contact(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-const body = JSON.stringify({ name: f.get("name"), email: f.get("email"), message: f.get("message") });
+    const body = JSON.stringify({ name: f.get("name"), email: f.get("email"), message: f.get("message") });
     const r = await fetch("/api/contact", { method: "POST", headers: { "content-type": "application/json" }, body });
     if (r.ok) { setEsc(false); setMsgs((m) => [...m, { role: "assistant", content: "Sent. The admin will reply to your email." }]); }
     else setMsgs((m) => [...m, { role: "assistant", content: "That didn't send. Check your email address and try again." }]);

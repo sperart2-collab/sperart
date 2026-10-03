@@ -1,17 +1,11 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { getSettings, lines } from "@/lib/settings";
+import Footer from "@/components/Footer";
 import { site } from "@/config/site";
 import Header from "@/components/Header";
 import Particles from "@/components/Particles";
 import ScrollFx from "@/components/ScrollFx";
 import VideoPlaylist from "@/components/VideoPlaylist";
 export const dynamic = "force-dynamic";
-type Hero = { title?: string; subtitle?: string; video_url?: string; cta_label?: string; cta_href?: string };
-async function getHero(): Promise<Hero> {
-  try {
-    const { data } = await supabaseServer().from("site_settings").select("value").eq("key", "hero").maybeSingle();
-    return (data?.value as Hero) ?? {};
-  } catch { return {}; }
-}
 const words = ["Percussion", "Rhythm", "Culture", "Education", "Performance", "Community", "Research"];
 const what = [
   ["Percussion education", "Lessons from first strike to advanced technique."],
@@ -22,13 +16,14 @@ const what = [
   ["Research", "Studying rhythm and its heritage."],
 ];
 export default async function Home() {
-  const h = await getHero();
-  const c = site.contact;
+  const s = await getSettings();
+  const h = s.hero;
+  const vids = lines(h.videos).length ? lines(h.videos) : site.heroVideos;
   return (
     <main>
       <ScrollFx /><Header />
       <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy">
-        <div className="hero-vid absolute inset-0"><VideoPlaylist sources={h.video_url ? [h.video_url] : site.heroVideos} /></div>
+        <div className="hero-vid absolute inset-0"><VideoPlaylist sources={vids} /></div>
         <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/25" />
         <Particles />
         <div className="hero-copy relative max-w-4xl px-5 pb-24 text-white md:px-12 md:pb-32">
@@ -49,7 +44,7 @@ export default async function Home() {
         </div>
       </section>
       <section id="about" className="bg-bone px-5 py-24 md:px-12">
-        <div className="reveal max-w-3xl"><h2 className="text-4xl font-semibold tracking-tight md:text-6xl">About SPERART</h2><p className="mt-6 text-lg leading-relaxed text-ink/80">{site.missionPlaceholder}</p></div>
+        <div className="reveal max-w-3xl"><h2 className="text-4xl font-semibold tracking-tight md:text-6xl">About SPERART</h2><p className="mt-6 text-lg leading-relaxed text-ink/80">{s.about.mission}</p><a href="/about" className="btn btn-blue mt-8">Mission, vision and leadership</a></div>
       </section>
       <section className="px-5 py-24 md:px-12">
         <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">Academy</h2>
@@ -58,15 +53,7 @@ export default async function Home() {
         </div>
         <a href="/join" className="btn btn-blue reveal mt-10">Become a member</a>
       </section>
-      <footer id="contact" className="bg-navy px-5 py-20 text-white md:px-12">
-        <h2 className="reveal text-4xl font-semibold tracking-tight">Contact</h2>
-        <address className="reveal mt-6 space-y-2 text-lg not-italic text-white/85">
-          <p>{c.address}</p>
-          <p><a className="text-gold underline" href={`mailto:${c.email}`}>{c.email}</a></p>
-          <p><a className="text-gold underline" href={`tel:${c.phone}`}>{c.phone}</a></p>
-        </address>
-        <p className="mt-12 text-sm text-white/50">© {new Date().getFullYear()} SPERART</p>
-      </footer>
+      <Footer c={s.contact} />
     </main>
   );
 }
