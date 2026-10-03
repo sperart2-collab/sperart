@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { signOut } from "./actions";
-const nav = [["Overview", "/admin"], ["Messages", "/admin/inbox"], ["Edit content", "/admin/content"], ["Media", "/admin/media"], ["News", "/admin/manage/news"], ["Events", "/admin/manage/events"], ["Registrations", "/admin/registrations"], ["Members", "/admin/members"]];
+const nav = [["Overview", "/admin"], ["Messages", "/admin/inbox"], ["Edit content", "/admin/content"], ["Media", "/admin/media"], ["News", "/admin/manage/news"], ["Events", "/admin/manage/events"], ["Academy", "/admin/manage/lessons"], ["Registrations", "/admin/registrations"], ["Members", "/admin/members"]];
 /** Server-side gate: signed in AND listed in public.admins. */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const sb = supabaseServer();

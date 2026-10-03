@@ -9,4 +9,4 @@ export function getAiProvider(): AiProvider {
   return p;
 }
 export const ASSISTANT_SYSTEM = "You help the SPERART administrator draft content. You only suggest. You never claim to have published or changed anything.";
-export const askAssistant = (messages: AiMessage[]) => getAiProvider().complete(ASSISTANT_SYSTEM, messages);
+export const askAssistant = (messages: AiMessage[], system: string = ASSISTANT_SYSTEM) => getAiProvider().complete(system, messages);

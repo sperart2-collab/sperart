@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-const links = [["About", "/about"], ["Media", "/media"], ["News", "/news"], ["Events", "/events"], ["Membership", "/membership"], ["Contact", "/#contact"]];
+const links = [["About", "/about"], ["Media", "/media"], ["News", "/news"], ["Events", "/events"], ["Academy", "/academy"], ["Membership", "/membership"]];
 export default function Header({ solid = false }: { solid?: boolean }) {
   const [o, setO] = useState(false);
   return (

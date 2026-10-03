@@ -25,6 +25,7 @@ export default async function Manage({ params, searchParams }: { params: { kind:
         {k.fields.map(([name, label, type]) => (
           <label key={name} className="block text-sm">{label}
             {type === "status" ? <select name={name} defaultValue={val(name) || "draft"} className="field mt-1"><option value="draft">Draft (hidden)</option><option value="published">Published</option></select>
+              : type?.startsWith("opts:") ? <select name={name} defaultValue={val(name) || type.slice(5).split(",")[0]} className="field mt-1">{type.slice(5).split(",").map((o) => <option key={o}>{o}</option>)}</select>
               : type?.startsWith("area") ? <textarea name={name} defaultValue={val(name)} rows={type === "area-lg" ? 10 : 3} className="field mt-1" />
               : <input name={name} type={type === "datetime" ? "datetime-local" : "text"} defaultValue={val(name, type)} className="field mt-1" />}
           </label>

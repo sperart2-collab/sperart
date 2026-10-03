@@ -53,7 +53,7 @@ export default async function Home() {
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {["Beginner", "Intermediate", "Advanced"].map((l, i) => <div key={l} className="card reveal" style={{ transitionDelay: `${i * 120}ms` }}><h3 className="text-xl font-semibold text-blue">{l}</h3><p className="mt-2 text-ink/70">Lessons coming soon.</p></div>)}
         </div>
-        <a href="/join" className="btn btn-blue reveal mt-10">Become a member</a>
+        <div className="reveal mt-10 flex flex-wrap gap-4"><a href="/academy" className="btn btn-blue">Explore the Academy</a><a href="/join" className="btn border border-gold">Become a member</a></div>
       </section>
       <Footer c={s.contact} />
     </main>
