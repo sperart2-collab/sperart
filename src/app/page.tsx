@@ -1,0 +1,72 @@
+import { supabaseServer } from "@/lib/supabase/server";
+import { site } from "@/config/site";
+import Header from "@/components/Header";
+import Particles from "@/components/Particles";
+import ScrollFx from "@/components/ScrollFx";
+import VideoPlaylist from "@/components/VideoPlaylist";
+export const dynamic = "force-dynamic";
+type Hero = { title?: string; subtitle?: string; video_url?: string; cta_label?: string; cta_href?: string };
+async function getHero(): Promise<Hero> {
+  try {
+    const { data } = await supabaseServer().from("site_settings").select("value").eq("key", "hero").maybeSingle();
+    return (data?.value as Hero) ?? {};
+  } catch { return {}; }
+}
+const words = ["Percussion", "Rhythm", "Culture", "Education", "Performance", "Community", "Research"];
+const what = [
+  ["Percussion education", "Lessons from first strike to advanced technique."],
+  ["Performances", "Live shows and recorded sessions."],
+  ["Workshops", "Hands-on sessions for all ages."],
+  ["Cultural preservation", "Keeping rhythm traditions alive."],
+  ["Youth programs", "Opening the door for young players."],
+  ["Research", "Studying rhythm and its heritage."],
+];
+export default async function Home() {
+  const h = await getHero();
+  const c = site.contact;
+  return (
+    <main>
+      <ScrollFx /><Header />
+      <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy">
+        <div className="hero-vid absolute inset-0"><VideoPlaylist sources={h.video_url ? [h.video_url] : site.heroVideos} /></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/25" />
+        <Particles />
+        <div className="hero-copy relative max-w-4xl px-5 pb-24 text-white md:px-12 md:pb-32">
+          <p className="rise text-gold">Welcome to sperart.org</p>
+          <h1 className="rise neon-hero mt-3 text-5xl font-semibold leading-[1.05] tracking-tight md:text-8xl" style={{ animationDelay: ".15s" }}>{h.title ?? "Rhythm is our language."}</h1>
+          <p className="rise mt-6 max-w-xl text-lg text-white/85" style={{ animationDelay: ".3s" }}>{h.subtitle ?? "Percussion, culture and music education. Learn, listen and take part."}</p>
+          <div className="rise mt-9 flex flex-wrap gap-4" style={{ animationDelay: ".45s" }}>
+            <a href={h.cta_href ?? "#what"} className="btn btn-blue">{h.cta_label ?? "Explore SPERART"}</a>
+            <button data-open-spar className="btn btn-line">Ask Spar</button>
+          </div>
+        </div>
+      </section>
+      <div className="marquee" aria-hidden><div>{[...words, ...words, ...words, ...words].map((w, i) => <span key={i}>{w}<i>✦</i></span>)}</div></div>
+      <section id="what" className="px-5 py-24 md:px-12">
+        <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">What we do</h2>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {what.map(([t, d], i) => <article key={t} className="card reveal" style={{ transitionDelay: `${(i % 3) * 120}ms` }}><h3 className="text-xl font-semibold text-blue">{t}</h3><p className="mt-2 text-ink/70">{d}</p></article>)}
+        </div>
+      </section>
+      <section id="about" className="bg-bone px-5 py-24 md:px-12">
+        <div className="reveal max-w-3xl"><h2 className="text-4xl font-semibold tracking-tight md:text-6xl">About SPERART</h2><p className="mt-6 text-lg leading-relaxed text-ink/80">{site.missionPlaceholder}</p></div>
+      </section>
+      <section className="px-5 py-24 md:px-12">
+        <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">Academy</h2>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {["Beginner", "Intermediate", "Advanced"].map((l, i) => <div key={l} className="card reveal" style={{ transitionDelay: `${i * 120}ms` }}><h3 className="text-xl font-semibold text-blue">{l}</h3><p className="mt-2 text-ink/70">Lessons coming soon.</p></div>)}
+        </div>
+        <a href="/join" className="btn btn-blue reveal mt-10">Become a member</a>
+      </section>
+      <footer id="contact" className="bg-navy px-5 py-20 text-white md:px-12">
+        <h2 className="reveal text-4xl font-semibold tracking-tight">Contact</h2>
+        <address className="reveal mt-6 space-y-2 text-lg not-italic text-white/85">
+          <p>{c.address}</p>
+          <p><a className="text-gold underline" href={`mailto:${c.email}`}>{c.email}</a></p>
+          <p><a className="text-gold underline" href={`tel:${c.phone}`}>{c.phone}</a></p>
+        </address>
+        <p className="mt-12 text-sm text-white/50">© {new Date().getFullYear()} SPERART</p>
+      </footer>
+    </main>
+  );
+}
