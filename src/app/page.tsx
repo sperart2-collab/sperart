@@ -1,5 +1,6 @@
 import { getSettings, lines } from "@/lib/settings";
 import Footer from "@/components/Footer";
+import PerformanceTeaser from "@/components/PerformanceTeaser";
 import { site } from "@/config/site";
 import Header from "@/components/Header";
 import Particles from "@/components/Particles";
@@ -46,6 +47,7 @@ export default async function Home() {
       <section id="about" className="bg-bone px-5 py-24 md:px-12">
         <div className="reveal max-w-3xl"><h2 className="text-4xl font-semibold tracking-tight md:text-6xl">About SPERART</h2><p className="mt-6 text-lg leading-relaxed text-ink/80">{s.about.mission}</p><a href="/about" className="btn btn-blue mt-8">Mission, vision and leadership</a></div>
       </section>
+      <PerformanceTeaser />
       <section className="px-5 py-24 md:px-12">
         <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">Academy</h2>
         <div className="mt-12 grid gap-5 md:grid-cols-3">

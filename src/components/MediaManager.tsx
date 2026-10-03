@@ -24,6 +24,12 @@ export default function MediaManager() {
     }
     setBusy(false); e.target.value = ""; load();
   }
+  async function rename(i: Item) {
+    const t = prompt("Title shown on the website", i.title ?? "");
+    if (t === null) return;
+    await sb.from("media").update({ title: t.trim() }).eq("id", i.id);
+    load();
+  }
   async function remove(i: Item) {
     if (!confirm("Delete this file? This cannot be undone.")) return;
     await sb.storage.from("media").remove([i.path]);
@@ -49,6 +55,7 @@ export default function MediaManager() {
             <div className="mt-2 flex flex-wrap gap-2 text-sm">
               <button className="underline" onClick={() => { navigator.clipboard.writeText(url(i.path)); setMsg("Link copied. Paste it in Edit content."); }}>Copy link</button>
               {i.kind === "video" && <button className="underline" onClick={async () => { await addHeroVideo(url(i.path)); setMsg("Added to the homepage hero."); }}>Add to hero</button>}
+              <button className="underline" onClick={() => rename(i)}>Rename</button>
               <button className="text-red-600 underline" onClick={() => remove(i)}>Delete</button>
             </div>
           </div>

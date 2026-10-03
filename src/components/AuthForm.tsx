@@ -12,7 +12,7 @@ export default function AuthForm({ initial }: { initial: "signin" | "signup" }) 
     const sb = supabaseBrowser();
     if (mode === "signin") {
       const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) setMsg(error.message); else { router.push("/admin"); router.refresh(); }
+      if (error) setMsg(error.message); else { router.push("/account"); router.refresh(); }
     } else {
       const { error } = await sb.auth.signUp({ email, password });
       setMsg(error ? error.message : "Account created. Check your email to confirm, then sign in.");

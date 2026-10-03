@@ -9,7 +9,7 @@ export default function Footer({ c }: { c: C }) {
           <p><a className="text-gold underline" href={`mailto:${c.email}`}>{c.email}</a></p>
           <p><a className="text-gold underline" href={`tel:${c.phone}`}>{c.phone}</a></p>
         </address>
-        <nav className="flex flex-col gap-2 text-white/85"><a href="/about">About</a><a href="/membership">Membership</a><a href="/join">Join</a><a href="/login">Sign in</a></nav>
+        <nav className="flex flex-col gap-2 text-white/85"><a href="/about">About</a><a href="/media">Media</a><a href="/news">News</a><a href="/events">Events</a><a href="/membership">Membership</a><a href="/join">Join</a><a href="/login">Sign in</a></nav>
       </div>
       <p className="mt-12 text-sm text-white/50">© {new Date().getFullYear()} SPERART</p>
     </footer>

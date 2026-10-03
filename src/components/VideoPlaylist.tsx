@@ -6,7 +6,7 @@ export default function VideoPlaylist({ sources }: { sources: string[] }) {
   const errs = useRef(0);
   const next = () => setI((n) => (n + 1) % sources.length);
   return (
-    <video key={i} className="h-full w-full object-cover" src={sources[i]} autoPlay muted playsInline preload="auto"
+    <video key={i} className="h-full w-full object-cover" src={sources[i]} autoPlay muted playsInline preload="metadata"
       loop={sources.length === 1} onPlaying={() => (errs.current = 0)} onEnded={next}
       onError={() => { if (++errs.current < sources.length * 2) next(); }} />
   );
