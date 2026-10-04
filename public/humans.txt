@@ -1,0 +1,6 @@
+/* TEAM */
+Developer: Izrealyte.dev
+
+/* SITE */
+Name: SPERART (Society of Percussive Art)
+Components: Next.js, React, Tailwind CSS, Supabase, Netlify

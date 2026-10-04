@@ -19,6 +19,7 @@ export default async function EventPage({ params, searchParams }: { params: { sl
       <p className="text-blue">{fmt(e.starts_at)}</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">{e.title}</h1>
       {e.location && <p className="mt-2 text-ink/70">{e.location}</p>}
+      <a href={`/events/${e.slug}/calendar`} className="btn mt-4 border border-gold !px-5 !py-2">Add to calendar</a>
       {e.cover_url && <img src={e.cover_url} alt="" className="mt-8 w-full rounded-2xl" />}
       <div className="mt-8 whitespace-pre-line text-lg leading-relaxed text-ink/85">{e.description}</div>
       {upcoming && (
