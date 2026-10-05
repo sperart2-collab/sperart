@@ -6,7 +6,7 @@ export const openrouterProvider: AiProvider = {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` },
-      body: JSON.stringify({ model: process.env.AI_MODEL, max_tokens: 1000, messages: [{ role: "system", content: system }, ...messages] }),
+      body: JSON.stringify({ model: process.env.AI_MODEL, max_tokens: 1500, messages: [{ role: "system", content: system }, ...messages] }),
     });
     if (!res.ok) throw new Error(`AI provider error ${res.status}`);
     const data = await res.json();

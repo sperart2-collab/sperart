@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 const main = [["About", "/about"], ["Media", "/media"], ["News", "/news"], ["Academy", "/academy"], ["Membership", "/membership"]];
 const more = [["Events", "/events"], ["Recognition", "/recognition"], ["Library", "/library"], ["Contact", "/#contact"]];
 export default function Header({ solid = false }: { solid?: boolean }) {
@@ -13,9 +14,9 @@ export default function Header({ solid = false }: { solid?: boolean }) {
           <details className="relative"><summary className="nl cursor-pointer list-none">More ▾</summary>
             <div className="absolute right-0 mt-3 w-44 rounded-xl bg-white p-2 text-ink shadow-xl">{more.map(([t, h]) => <a key={h} href={h} className="block rounded-lg px-3 py-2 hover:bg-bone">{t}</a>)}</div>
           </details>
-          <a href="/login" className="btn btn-blue !px-5 !py-2">Sign in</a>
+          <ThemeToggle /><a href="/login" className="btn btn-blue !px-5 !py-2">Sign in</a>
         </nav>
-        <button className="grid h-11 w-11 place-items-center text-2xl md:hidden" aria-label="Menu" aria-expanded={o} onClick={() => setO(!o)}>{o ? "✕" : "☰"}</button>
+        <div className="flex items-center gap-2 md:hidden"><ThemeToggle /><button className="grid h-11 w-11 place-items-center text-2xl" aria-label="Menu" aria-expanded={o} onClick={() => setO(!o)}>{o ? "✕" : "☰"}</button></div>
       </div>
       {o && (
         <nav className="flex max-h-[80vh] flex-col gap-1 overflow-y-auto bg-white px-5 pb-5 text-ink md:hidden">

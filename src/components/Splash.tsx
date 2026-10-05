@@ -1,21 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
-/** Logo welcome screen for 3 seconds, once per browser session. */
+import LetterLoader from "./LetterLoader";
+import Particles from "./Particles";
+/** Neon letter loader with particles, about 2.6 seconds, once per browser session. */
 export default function Splash() {
   const [s, setS] = useState<"show" | "fade" | "gone">("show");
   useEffect(() => {
     if (sessionStorage.getItem("sp-seen")) { setS("gone"); return; }
-    const a = setTimeout(() => setS("fade"), 3000);
-    const b = setTimeout(() => { setS("gone"); sessionStorage.setItem("sp-seen", "1"); }, 3500);
+    const a = setTimeout(() => setS("fade"), 2600);
+    const b = setTimeout(() => { setS("gone"); sessionStorage.setItem("sp-seen", "1"); }, 3100);
     return () => { clearTimeout(a); clearTimeout(b); };
   }, []);
   if (s === "gone") return null;
   return (
-    <div className={`fixed inset-0 z-[100] grid place-items-center bg-white transition-opacity duration-500 ${s === "fade" ? "opacity-0" : ""}`}>
-      <div className="w-[80vw] max-w-md">
-        <img src="/logo.png" alt="SPERART" className="splash-logo w-full" />
-        <div className="mx-auto mt-6 h-1 w-2/3 overflow-hidden rounded bg-blue-100"><div className="load-bar h-full" /></div>
-      </div>
+    <div className={`fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-navy transition-opacity duration-500 ${s === "fade" ? "opacity-0" : ""}`}>
+      <Particles />
+      <div className="relative"><img src="/emblem.png" alt="" className="mx-auto mb-6 h-20 w-auto drop-shadow-[0_0_18px_rgba(76,141,255,.8)]" /><LetterLoader /></div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase/server";
 import { fmt } from "@/lib/format";
 import { registerForEvent } from "../actions";
+import Countdown from "@/components/Countdown";
 export const dynamic = "force-dynamic";
 const get = (slug: string) => supabaseServer().from("events").select("*").eq("slug", slug).eq("status", "published").maybeSingle();
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -13,6 +14,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function EventPage({ params, searchParams }: { params: { slug: string }; searchParams: { registered?: string } }) {
   const { data: e } = await get(params.slug);
   if (!e) notFound();
+  const { data: taken } = await supabaseServer().rpc("registrations_count", { eid: e.id });
+  const left = e.capacity ? Math.max(0, e.capacity - (taken ?? 0)) : null;
   const upcoming = new Date(e.starts_at).getTime() >= Date.now();
   return (
     <Shell><div className="mx-auto max-w-3xl">
@@ -20,9 +23,11 @@ export default async function EventPage({ params, searchParams }: { params: { sl
       <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">{e.title}</h1>
       {e.location && <p className="mt-2 text-ink/70">{e.location}</p>}
       <a href={`/events/${e.slug}/calendar`} className="btn mt-4 border border-gold !px-5 !py-2">Add to calendar</a>
+      {upcoming && <div className="mt-6"><Countdown to={e.starts_at} /></div>}
+      {upcoming && left !== null && <p className="mt-4 font-medium text-blue">{left > 0 ? `Only ${left} seat${left === 1 ? "" : "s"} left` : "This event is full"}</p>}
       {e.cover_url && <img src={e.cover_url} alt="" className="mt-8 w-full rounded-2xl" />}
       <div className="mt-8 whitespace-pre-line text-lg leading-relaxed text-ink/85">{e.description}</div>
-      {upcoming && (
+      {upcoming && left !== 0 && (
         <form action={registerForEvent} className="card mt-10 space-y-3">
           <h2 className="text-xl font-semibold text-blue">Register</h2>
           <input type="hidden" name="slug" value={e.slug} /><input type="hidden" name="event_id" value={e.id} />
@@ -31,6 +36,7 @@ export default async function EventPage({ params, searchParams }: { params: { sl
           <input name="phone" placeholder="Phone (optional)" className="field" />
           <button className="btn btn-blue">Register</button>
           {searchParams.registered === "1" && <p role="status" className="text-sm">You are registered. We will be in touch.</p>}
+          {searchParams.registered === "full" && <p role="alert" className="text-sm text-red-600">Sorry, this event is now full.</p>}
           {searchParams.registered === "error" && <p role="alert" className="text-sm text-red-600">Could not register. Check your details and try again.</p>}
         </form>
       )}

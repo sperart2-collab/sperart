@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const s = await getSettings();
   const ld = { "@context": "https://schema.org", "@type": "Organization", name: "SPERART", alternateName: "Society of Percussive Art", url: "https://sperart.org", logo: "https://sperart.org/logo.png", email: s.contact.email, telephone: s.contact.phone };
   return (
-    <html lang="en"><body className="font-sans antialiased">
+    <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: 'try{if(localStorage.getItem("sp-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}' }} /></head><body className="font-sans antialiased">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "SPERART", url: "https://sperart.org", creator: { "@type": "Person", name: site.developer.name, ...(site.developer.url ? { url: site.developer.url } : {}) } }) }} />
       <Splash />{children}<WhatsApp number={s.contact.whatsapp} /><Spar /><CookieBanner />

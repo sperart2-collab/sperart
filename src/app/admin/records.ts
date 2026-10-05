@@ -8,17 +8,18 @@ export async function saveRecord(f: FormData) {
   const kind = String(f.get("_kind")), k = kinds[kind];
   if (!k) return;
   const id = String(f.get("_id") || "");
-  const row: Record<string, string> = {};
+  const row: Record<string, string | null> = {};
   for (const [name, , type] of k.fields) {
     let v = String(f.get(name) ?? "").trim();
     if (type === "datetime") { if (!v) continue; v = new Date(`${v}:00+01:00`).toISOString(); }
+    if (type === "number") { row[name] = v || null; continue; }
     row[name] = v;
   }
   if (!row.title) row.title = "Untitled";
   const sb = supabaseServer();
   const { error } = id
     ? await sb.from(k.table).update(row).eq("id", id)
-    : await sb.from(k.table).insert({ ...row, slug: `${slugify(row.title) || "item"}-${Math.random().toString(36).slice(2, 6)}` });
+    : await sb.from(k.table).insert({ ...row, slug: `${slugify(row.title ?? "") || "item"}-${Math.random().toString(36).slice(2, 6)}` });
   revalidatePath("/", "layout");
   redirect(`/admin/manage/${kind}?${error ? "error=1" : "saved=1"}`);
 }
@@ -32,4 +33,17 @@ export async function deleteRecord(f: FormData) {
 export async function setMemberStatus(f: FormData) {
   await supabaseServer().rpc("set_member_status", { uid: String(f.get("uid")), new_status: String(f.get("status")) });
   revalidatePath("/admin/members");
+}
+export async function createDraft(f: FormData) {
+  const kind = String(f.get("type")), k = kinds[kind];
+  if (!k || !["news", "events", "lessons"].includes(kind)) return;
+  const g = (n: string) => String(f.get(n) ?? "").trim();
+  const title = (g("title") || "Untitled").slice(0, 200);
+  const common = { title, status: "draft", slug: `${slugify(title) || "item"}-${Math.random().toString(36).slice(2, 6)}` };
+  const row: Record<string, unknown> = kind === "news" ? { ...common, excerpt: g("summary"), body: g("body") }
+    : kind === "events" ? { ...common, description: g("body"), location: g("location"), ...(g("starts_at") ? { starts_at: new Date(`${g("starts_at")}:00+01:00`).toISOString() } : {}) }
+    : { ...common, summary: g("summary"), body: g("body"), level: ["Beginner", "Intermediate", "Advanced"].includes(g("level")) ? g("level") : "Beginner", category: g("category") === "Rudiment" ? "Rudiment" : "Lesson" };
+  const { error } = await supabaseServer().from(k.table).insert(row);
+  revalidatePath("/", "layout");
+  redirect(`/admin/manage/${kind}?${error ? "error=1" : "saved=1"}`);
 }

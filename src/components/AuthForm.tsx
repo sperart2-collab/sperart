@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Particles from "@/components/Particles";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 export default function AuthForm({ initial }: { initial: "signin" | "signup" }) {
   const [mode, setMode] = useState(initial);
@@ -20,8 +21,8 @@ export default function AuthForm({ initial }: { initial: "signin" | "signup" }) 
     setBusy(false);
   }
   return (
-    <main className="grid min-h-screen place-items-center bg-bone p-5">
-      <div className="w-full max-w-sm rounded-3xl border border-blue/20 bg-white p-7 shadow-[0_0_40px_rgba(30,91,255,.15)]">
+    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-bone p-5"><Particles />
+      <div className="relative w-full max-w-sm rounded-3xl border border-blue/20 bg-white p-7 shadow-[0_0_40px_rgba(30,91,255,.15)]">
         <a href="/" className="mx-auto block w-fit"><img src="/emblem.png" alt="SPERART" className="h-16" /></a>
         <div className="mt-6 grid grid-cols-2 rounded-full bg-bone p-1 text-sm font-medium">
           {(["signin", "signup"] as const).map((m) => <button key={m} onClick={() => { setMode(m); setMsg(""); }} className={`rounded-full py-2 transition ${mode === m ? "bg-blue text-white shadow-[0_0_14px_rgba(30,91,255,.5)]" : ""}`}>{m === "signin" ? "Sign in" : "Join as member"}</button>)}

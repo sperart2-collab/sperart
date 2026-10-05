@@ -24,8 +24,17 @@ async function facts() {
     ].filter(Boolean).join("\n");
   } catch { return ""; }
 }
+const hits = new Map<string, { n: number; t: number }>();
+/** Best-effort limit: 20 questions per visitor per hour (per server instance). */
+function limited(ip: string) {
+  const now = Date.now(), h = hits.get(ip);
+  if (!h || now - h.t > 3600000) { hits.set(ip, { n: 1, t: now }); return false; }
+  return ++h.n > 20;
+}
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-nf-client-connection-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+    if (limited(ip)) return NextResponse.json({ reply: "You have asked a lot of questions. Please message the admin directly. [[ESCALATE]]" });
     const { messages } = await req.json();
     const clean = (Array.isArray(messages) ? messages : []).slice(-8)
       .map((m: { role: string; content: string }) => ({ role: m.role === "assistant" ? "assistant" : "user", content: String(m.content).slice(0, 500) })) as { role: "user" | "assistant"; content: string }[];

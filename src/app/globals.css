@@ -35,3 +35,16 @@ header.site.scrolled{background:rgba(255,255,255,.92);backdrop-filter:blur(10px)
 @keyframes load{from{transform:scaleX(0)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 header.site.solid{background:rgba(255,255,255,.95);color:#0A1A3A;box-shadow:0 1px 0 #E3EAF8}
+:root{--ink:10 26 58;--bone:245 248 255;--clay:232 238 251;--surface:#fff;--line:#E3EAF8}
+html.dark{--ink:232 238 252;--bone:9 16 33;--clay:22 34 64;--surface:#0E172E;--line:#1F2D52;color-scheme:dark}
+body{background:var(--surface);color:rgb(var(--ink));transition:background .3s,color .3s}
+.bg-white{background-color:var(--surface)}
+.card{background:var(--surface);border-color:var(--line)}
+.field{background:var(--surface);color:rgb(var(--ink));border-color:var(--line)}
+header.site.scrolled,header.site.solid{background:color-mix(in srgb,var(--surface) 92%,transparent);color:rgb(var(--ink))}
+.marquee{background:rgb(var(--bone));border-color:var(--line)}
+.neon-blue{color:#1E5BFF;text-shadow:0 0 14px rgba(30,91,255,.45)}
+.neon-letters{color:#fff;text-shadow:0 0 12px #4C8DFF,0 0 32px #1E5BFF,0 0 48px rgba(255,201,60,.55)}
+.ltr{display:inline-block;opacity:0;animation:ltr 1.5s ease-in-out infinite}
+@keyframes ltr{0%{opacity:0;transform:translateY(34px) scale(.5);filter:blur(8px)}30%,65%{opacity:1;transform:none;filter:blur(0)}100%{opacity:0;transform:translateY(-24px) scale(1.15);filter:blur(6px)}}
+@media (prefers-reduced-motion:reduce){.ltr{animation:none;opacity:1}}
