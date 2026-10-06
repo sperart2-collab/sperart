@@ -1,27 +1,6 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Shell from "@/components/Shell";
 import Metronome from "@/components/Metronome";
 import { supabaseServer } from "@/lib/supabase/server";
-export const dynamic = "force-dynamic";
-const get = (slug: string) => supabaseServer().from("lessons").select("*").eq("slug", slug).eq("status", "published").maybeSingle();
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { data } = await get(params.slug);
-  return data ? { title: data.title, description: data.summary ?? undefined } : {};
-}
-export default async function Lesson({ params }: { params: { slug: string } }) {
-  const { data: l } = await get(params.slug);
-  if (!l) notFound();
-  return (
-    <Shell><div className="mx-auto max-w-3xl">
-      <p className="text-blue">{l.category} · {l.level}</p>
-      <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">{l.title}</h1>
-      {l.summary && <p className="mt-4 text-lg text-ink/75">{l.summary}</p>}
-      {l.video_url && <video src={l.video_url} controls playsInline preload="metadata" className="mt-8 max-h-[70vh] w-full rounded-2xl bg-navy" />}
-      {l.audio_url && <audio src={l.audio_url} controls preload="none" className="mt-6 w-full" />}
-      {l.body && <div className="mt-8 whitespace-pre-line text-lg leading-relaxed text-ink/85">{l.body}</div>}
-      <div className="mt-10"><Metronome /></div>
-      <a href="/academy" className="btn btn-blue mt-10">All lessons</a>
-    </div></Shell>
-  );
-}
+export const dynamic="force-dynamic";
+export default async function LessonPage({params}:{params:{slug:string}}){const {data:l}=await supabaseServer().from("lessons").select("slug,title,summary,level,category,body,video_url,audio_url").eq("slug",params.slug).eq("status","published").maybeSingle();if(!l)notFound(); const sections=String(l.body||"").split(/\n\s*\n/).filter(Boolean); return <Shell><div className="mx-auto max-w-[1180px] space-y-7"><a href="/academy" className="text-sm font-semibold text-[#2e75ff]">← Back to Academy</a><section className="academy-hero overflow-hidden rounded-[34px] p-7 md:p-10"><div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"><div><span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-[#f4c968]">{l.level} · {l.category}</span><h1 className="mt-5 text-4xl font-semibold tracking-tight md:text-6xl">{l.title}</h1><p className="mt-4 max-w-2xl text-lg leading-8 text-white/65">{l.summary}</p></div><div className="rounded-3xl border border-white/10 bg-white/10 p-5 text-sm text-white/70"><strong className="block text-white">Your lesson</strong><span className="mt-1 block">Learn → Practice → Repeat → Master</span></div></div><div className="mt-8 lesson-progress"><span style={{width:"8%"}}/></div><p className="mt-2 text-xs text-white/45">Lesson 1 · Begin your practice</p></section><div className="grid gap-7 lg:grid-cols-[1fr_320px]"><article className="rounded-[30px] border border-[#e7dcc5] bg-[#fffdf8] p-6 shadow-[0_20px_70px_rgba(6,20,43,.07)] md:p-9"><div className="mb-8"><p className="sperart-kicker">Lesson guide</p><h2 className="mt-1 text-2xl font-semibold">Read, listen, then play.</h2></div><div className="space-y-8">{sections.map((s:string,i:number)=>{const lines=s.split("\n");const head=lines[0];return <section key={i}><h3 className="text-xl font-semibold text-[#06142b]">{head}</h3><div className="mt-3 whitespace-pre-line text-[15px] leading-8 text-[#06142b]/70">{lines.slice(1).join("\n")||head}</div></section>})}</div><div className="mt-10 rounded-[24px] bg-[#06142b] p-6 text-white"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#f4c968]">Practice assignment</p><p className="mt-3 leading-7 text-white/70">Repeat the core exercise slowly, keep the pulse steady, and only increase tempo when the pattern stays relaxed and even.</p><button className="btn btn-blue mt-5">Mark lesson complete</button></div></article><aside className="space-y-5"><div className="card !rounded-[28px]"><p className="sperart-kicker">Practice room</p><h3 className="mt-1 text-xl font-semibold">Keep the pulse.</h3><div className="mt-4"><Metronome/></div></div><div className="card !rounded-[28px]"><p className="sperart-kicker">SPERART AI</p><h3 className="mt-1 text-xl font-semibold">Need help?</h3><p className="mt-2 text-sm leading-6 text-ink/60">Ask your SPERART AI to explain the lesson differently, create another exercise, or quiz you.</p><a href="/account" className="btn btn-blue mt-4 w-full">Ask SPERART AI</a></div></aside></div></div></Shell>}
