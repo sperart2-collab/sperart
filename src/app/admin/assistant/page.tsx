@@ -1,4 +1,2 @@
 import AdminAssistant from "@/components/AdminAssistant";
-export default function Assistant() {
-  return (<><h1 className="text-3xl font-semibold">AI assistant</h1><p className="mt-2 text-ink/70">Full control is enabled by default. Safe admin actions run immediately; destructive deletes still require confirmation.</p><AdminAssistant /></>);
-}
+export default function Assistant(){return <><div className="flex items-center gap-4"><span className="grid h-14 w-14 place-items-center rounded-[20px] bg-[linear-gradient(135deg,#FFC93C,#0F52FF)] text-2xl text-white shadow-[0_0_30px_rgba(15,82,255,.3)]">✦</span><div><p className="text-xs font-bold uppercase tracking-[.25em] text-blue">SPERART intelligence</p><h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Your digital operator</h1><p className="mt-1 text-sm text-ink/60">Understands SPERART, sees your site data and executes safe work automatically.</p></div></div><AdminAssistant /></>}

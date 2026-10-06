@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-bone text-ink md:flex">
       <aside className="bg-white md:sticky md:top-0 md:h-screen md:w-64 md:shrink-0 md:overflow-y-auto md:border-r md:border-blue/15">
         <div className="flex items-center justify-between px-5 py-4">
-          <a href="/" className="neon-blue font-semibold tracking-[.2em]">SPERART</a>
+          <a href="/" className="flex items-center gap-2"><img src="/emblem.png" alt="SPERART" className="h-9 w-9 rounded-full object-contain" /><span className="neon-blue font-semibold tracking-[.18em]">SPERART</span></a>
           <div className="flex items-center gap-3"><ThemeToggle /><form action={signOut} className="md:hidden"><button className="text-sm underline">Sign out</button></form></div>
         </div>
         <nav className="flex gap-2 overflow-x-auto px-4 pb-3 md:flex-col md:gap-1 md:px-3">

@@ -1,31 +1,17 @@
 import { supabaseServer } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
-async function count(table: string, status?: string) {
-  let q = supabaseServer().from(table).select("*", { count: "exact", head: true });
-  if (status) q = q.eq("status", status);
-  return (await q).count ?? 0;
-}
-const quick = [["Upload media", "/admin/media"], ["Add news", "/admin/manage/news"], ["Create event", "/admin/manage/events"], ["Create lesson", "/admin/manage/lessons"], ["Review messages", "/admin/inbox"], ["Ask the AI assistant", "/admin/assistant"]];
-export default async function AdminHome() {
-  const [msgs, pending, regs, subs, news, drafts, media] = await Promise.all([count("inquiries", "new"), count("profiles", "pending"), count("registrations"), count("subscribers"), count("articles", "published"), count("articles", "draft"), count("media")]);
-  const hour = Number(new Date().toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Africa/Lagos" }));
-  const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const stats: [string, number][] = [["New messages", msgs], ["Members to approve", pending], ["Event registrations", regs], ["Subscribers", subs], ["Published news", news], ["Draft articles", drafts], ["Media files", media]];
-  const { data: recent } = await supabaseServer().from("inquiries").select("id,name,message,status").order("created_at", { ascending: false }).limit(3);
-  return (
-    <>
-      <h1 className="text-4xl font-semibold tracking-tight">{greet}.</h1>
-      <p className="mt-1 text-ink/70">Here is what is happening at SPERART.</p>
-      <dl className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {stats.map(([k, v]) => <div key={k} className="card"><dd className="neon-blue text-4xl font-semibold">{v}</dd><dt className="mt-1 text-sm text-ink/70">{k}</dt></div>)}
-      </dl>
-      <h2 className="mt-12 text-xl font-semibold">Quick actions</h2>
-      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
-        {quick.map(([t, h]) => <a key={h} href={h} className="card text-center font-medium">{t}</a>)}
-      </div>
-      <h2 className="mt-12 text-xl font-semibold">Latest messages</h2>
-      {!recent?.length && <p className="mt-3 text-ink/70">No messages yet.</p>}
-      <div className="mt-4 space-y-3">{recent?.map((m) => <a key={m.id} href="/admin/inbox" className="card block !p-4"><p className="font-semibold">{m.name} {m.status === "new" && <span className="ml-2 rounded-full bg-gold px-2 py-0.5 text-xs text-navy">New</span>}</p><p className="truncate text-sm text-ink/70">{m.message}</p></a>)}</div>
-    </>
-  );
+async function count(table: string, status?: string) { let q=supabaseServer().from(table).select("*",{count:"exact",head:true}); if(status) q=q.eq("status",status); return (await q).count??0; }
+const quick=[ ["Members","/admin/members","Review approvals"],["Messages","/admin/inbox","Reply to members"],["Content","/admin/content","Shape the site"],["Media","/admin/media","Manage your library"],["Events","/admin/manage/events","Publish experiences"],["Academy","/admin/manage/lessons","Build learning"] ];
+export default async function AdminHome(){
+ const [msgs,pending,regs,subs,news,drafts,media]=await Promise.all([count("inquiries","new"),count("profiles","pending"),count("registrations"),count("subscribers"),count("articles","published"),count("articles","draft"),count("media")]);
+ const {data:recent}=await supabaseServer().from("inquiries").select("id,name,message,status,created_at").order("created_at",{ascending:false}).limit(4);
+ const attention=[pending?`${pending} member${pending>1?"s":""} waiting for approval`:"No member approvals waiting",msgs?`${msgs} new message${msgs>1?"s":""} need attention`:"Inbox is clear",drafts?`${drafts} draft article${drafts>1?"s":""} in your workspace`:"No article drafts waiting"];
+ const stats=[["Members waiting",pending,"/admin/members"],["New messages",msgs,"/admin/inbox"],["Published news",news,"/admin/manage/news"],["Drafts",drafts,"/admin/manage/news"],["Registrations",regs,"/admin/registrations"],["Media",media,"/admin/media"]];
+ const hour=Number(new Date().toLocaleString("en-GB",{hour:"2-digit",hour12:false,timeZone:"Africa/Lagos"})); const greet=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+ return <div className="space-y-7">
+  <section className="relative overflow-hidden rounded-[34px] bg-[radial-gradient(circle_at_85%_0%,rgba(255,201,60,.28),transparent_26%),linear-gradient(135deg,#06122E,#0A2458_55%,#0F52FF)] p-7 text-white shadow-[0_28px_90px_rgba(6,18,46,.22)] md:p-9"><div className="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/10"/><div className="relative flex flex-col justify-between gap-7 md:flex-row md:items-end"><div><p className="text-xs font-bold uppercase tracking-[.28em] text-gold">SPERART command centre</p><h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">{greet}, Admin.</h1><p className="mt-3 max-w-2xl text-white/65">A cleaner view of your organisation. Watch the important things, then let your AI handle the routine work.</p></div><a href="/admin/assistant" className="group inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur hover:bg-white/15"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-gold text-xl text-navy shadow-[0_0_26px_rgba(255,201,60,.4)]">✦</span><span><strong className="block">SPERART AI</strong><small className="text-white/55">Open your digital operator →</small></span></a></div></section>
+  <section className="grid grid-cols-2 gap-3 md:grid-cols-3">{stats.map(([k,v,h])=><a key={String(h)} href={String(h)} className="group rounded-[22px] border border-blue/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue/30 hover:shadow-[0_18px_50px_rgba(15,82,255,.1)]"><p className="text-3xl font-semibold text-blue">{String(v)}</p><p className="mt-1 text-sm text-ink/60">{String(k)}</p><p className="mt-4 text-xs font-semibold text-blue opacity-0 transition group-hover:opacity-100">Open →</p></a>)}</section>
+  <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]"><section className="rounded-[28px] border border-blue/10 bg-white p-6 shadow-sm"><div className="flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-blue">What needs attention</p><h2 className="mt-1 text-2xl font-semibold">Your next moves</h2></div><span className="grid h-10 w-10 place-items-center rounded-2xl bg-bone">◎</span></div><div className="mt-5 space-y-3">{attention.map((x,i)=><div key={i} className="flex items-center gap-3 rounded-2xl border border-blue/10 bg-bone/40 p-4"><span className={`grid h-8 w-8 place-items-center rounded-full ${x.startsWith("No")?"bg-white text-green-600":"bg-gold text-navy"}`}>{x.startsWith("No")?"✓":"!"}</span><p className="text-sm font-medium">{x}</p></div>)}</div></section><section className="rounded-[28px] bg-[linear-gradient(135deg,#0F52FF,#06122E)] p-6 text-white shadow-[0_20px_70px_rgba(15,82,255,.2)]"><p className="text-xs font-bold uppercase tracking-[.2em] text-gold">Quick actions</p><h2 className="mt-1 text-2xl font-semibold">Run the organisation</h2><div className="mt-5 grid grid-cols-2 gap-2">{quick.map(([t,h,s])=><a key={h} href={h} className="rounded-2xl border border-white/10 bg-white/10 p-3 transition hover:bg-white/15"><strong className="block text-sm">{t}</strong><span className="mt-1 block text-xs text-white/50">{s}</span></a>)}</div></section></div>
+  <section><div className="flex items-end justify-between"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-blue">Inbox pulse</p><h2 className="mt-1 text-2xl font-semibold">Latest messages</h2></div><a href="/admin/inbox" className="text-sm font-semibold text-blue">Open inbox →</a></div><div className="mt-4 space-y-3">{recent?.map(m=><a key={m.id} href="/admin/inbox" className="block rounded-[22px] border border-blue/10 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue/30"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{m.name}</p><span className="text-xs text-ink/40">{new Date(m.created_at).toLocaleDateString("en-NG")}</span></div><p className="mt-1 truncate text-sm text-ink/60">{m.message}</p></a>)}</div></section>
+ </div>;
 }

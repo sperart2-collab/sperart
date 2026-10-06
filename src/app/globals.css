@@ -51,3 +51,6 @@ header.site.scrolled,header.site.solid{background:color-mix(in srgb,var(--surfac
 :root{--bone:250 243 226;--clay:243 232 205;--surface:#FFFCF3;--line:#EADFC2}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+/* SPERART premium product surfaces */
+::selection{background:#FFC93C;color:#06122E}
+button,a{touch-action:manipulation}

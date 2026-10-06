@@ -11,11 +11,12 @@ export const metadata: Metadata = {
   description: desc,
   authors: [{ name: site.developer.name }],
   creator: site.developer.name,
-  openGraph: { title: "SPERART | Society of Percussive Art", description: desc, url: "https://sperart.org", siteName: "SPERART", images: ["/logo.png"], type: "website" },
+  icons: { icon: "/icon.png", shortcut: "/icon.png", apple: "/icon.png" },
+  openGraph: { title: "SPERART | Society of Percussive Art", description: desc, url: "https://sperart.org", siteName: "SPERART", images: ["/emblem.png"], type: "website" },
 };
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
-  const ld = { "@context": "https://schema.org", "@type": "Organization", name: "SPERART", alternateName: "Society of Percussive Art", url: "https://sperart.org", logo: "https://sperart.org/logo.png", email: s.contact.email, telephone: s.contact.phone };
+  const ld = { "@context": "https://schema.org", "@type": "Organization", name: "SPERART", alternateName: "Society of Percussive Art", url: "https://sperart.org", logo: "https://sperart.org/emblem.png", email: s.contact.email, telephone: s.contact.phone };
   return (
     <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: 'try{if(localStorage.getItem("sp-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}' }} /></head><body className="font-sans antialiased">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />

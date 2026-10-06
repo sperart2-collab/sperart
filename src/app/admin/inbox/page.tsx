@@ -1,45 +1,13 @@
 import { supabaseServer } from "@/lib/supabase/server";
-import { markHandled, replyToMember, sendEmailReply } from "./actions";
+import { markHandled, replyMember } from "../actions";
 import SubmitButton from "@/components/SubmitButton";
-export const dynamic = "force-dynamic";
-export default async function Inbox({ searchParams }: { searchParams: { sent?: string; error?: string } }) {
-  const sb = supabaseServer();
-  const [{ data: inquiries }, { data: webMessages }, { data: people }] = await Promise.all([
-    sb.from("inquiries").select("*").order("created_at", { ascending: false }).limit(100),
-    sb.from("member_messages").select("id,sender_id,recipient_id,body,created_at,read_at").order("created_at", { ascending: false }).limit(100),
-    sb.from("profiles").select("user_id,email,full_name").limit(500),
-  ]);
-  const person = new Map((people ?? []).map((p) => [p.user_id, p]));
-  return <>
-    <h1 className="text-3xl font-semibold">Messages</h1>
-    <p className="mt-2 text-ink/60">Reply by email for a normal email response, or reply inside a member's SPERART account.</p>{searchParams.sent && <p role="status" className="mt-4 rounded-xl border border-gold bg-white p-3">{searchParams.sent === "email" ? "Email sent successfully." : "Member reply sent successfully."}</p>}{searchParams.error && <p role="alert" className="mt-4 rounded-xl border border-red-300 bg-white p-3">{searchParams.error}</p>}
-    <section className="mt-7 space-y-4">
-      <h2 className="text-xl font-semibold">Contact messages</h2>
-      {!inquiries?.length && <p className="text-ink/70">No contact messages yet.</p>}
-      {inquiries?.map((m) => {
-        const member = (people ?? []).find((p) => p.email?.toLowerCase() === m.email?.toLowerCase());
-        return <article key={m.id} className="card">
-          <p className="font-semibold">{m.name} <span className="font-normal text-ink/60">{m.email}</span></p>
-          <p className="mt-2 whitespace-pre-line">{m.message}</p>
-          <p className="mt-3 text-sm text-ink/60">{new Date(m.created_at).toLocaleString()} · {m.status === "new" ? "New" : "Handled"}</p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <a className="btn btn-blue !px-4 !py-2" href={`mailto:${m.email}?subject=${encodeURIComponent("Re: your message to SPERART")}`}>Open email app</a>
-            {m.status === "new" && <form action={markHandled}><input type="hidden" name="id" value={m.id} /><SubmitButton className="btn border border-gold !px-4 !py-2" pending="Updating…">Mark handled</SubmitButton></form>}
-          </div>
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <form action={sendEmailReply} className="rounded-2xl border border-blue/10 bg-bone p-4">
-              <input type="hidden" name="to" value={m.email} /><input type="hidden" name="subject" value="Re: your message to SPERART" />
-              <p className="font-semibold">Reply by email</p><p className="mt-1 text-xs text-ink/60">Uses Resend when your Resend key is configured.</p><textarea name="body" required rows={4} className="field mt-3" placeholder="Write your email reply…" /><div className="mt-3"><SubmitButton className="btn btn-blue !px-4 !py-2" pending="Sending email…">Send email</SubmitButton></div>
-            </form>
-            {member ? <form action={replyToMember} className="rounded-2xl border border-gold bg-bone p-4"><input type="hidden" name="email" value={member.email} /><p className="font-semibold">Reply in SPERART</p><p className="mt-1 text-xs text-ink/60">The member gets it in their notification bell and Messages area.</p><textarea name="body" required rows={4} className="field mt-3" placeholder="Write your member reply…" /><div className="mt-3"><SubmitButton className="btn btn-blue !px-4 !py-2" pending="Sending…">Send in member account</SubmitButton></div></form> : <div className="rounded-2xl border border-blue/10 bg-bone p-4"><p className="font-semibold">Reply in SPERART</p><p className="mt-1 text-sm text-ink/60">This sender does not have a member account yet, so only email reply is available.</p></div>}
-          </div>
-        </article>;
-      })}
-    </section>
-    <section className="mt-10 space-y-4">
-      <h2 className="text-xl font-semibold">Member account messages</h2>
-      {!webMessages?.length && <p className="text-ink/70">No account messages yet.</p>}
-      {webMessages?.map((m) => { const sender = person.get(m.sender_id); const recipient = person.get(m.recipient_id); return <article key={m.id} className="card"><p className="font-semibold">{sender?.full_name || sender?.email || "Member"} <span className="font-normal text-ink/50">→ {recipient?.full_name || recipient?.email || "Member"}</span></p><p className="mt-2 whitespace-pre-line">{m.body}</p><p className="mt-3 text-sm text-ink/60">{new Date(m.created_at).toLocaleString()}</p></article>; })}
-    </section>
-  </>;
+export const dynamic="force-dynamic";
+export default async function Inbox({searchParams}:{searchParams:{member?:string}}){
+ const sb=supabaseServer(); const [{data:inquiries},{data:memberMessages}]=await Promise.all([sb.from("inquiries").select("*").order("created_at",{ascending:false}).limit(100),sb.from("member_messages").select("id,sender_id,recipient_id,body,created_at,read_at").order("created_at",{ascending:false}).limit(60)]);
+ const ids=Array.from(new Set((memberMessages??[]).map(m=>m.sender_id).concat((memberMessages??[]).map(m=>m.recipient_id)))); const {data:profiles}=ids.length?await sb.from("profiles").select("user_id,full_name,email").in("user_id",ids):{data:[]}; const byId=new Map((profiles??[]).map(p=>[p.user_id,p]));
+ return <div className="space-y-10"><header><p className="text-xs font-bold uppercase tracking-[.22em] text-blue">Communications</p><h1 className="mt-1 text-3xl font-semibold">Inbox</h1><p className="mt-2 text-sm text-ink/60">Email enquiries and member conversations live side-by-side.</p></header>
+ {searchParams.member==="sent"&&<p className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">Reply sent. The member has been notified in their account.</p>}{searchParams.member==="error"&&<p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Could not send that member reply.</p>}
+ <section><div className="flex items-end justify-between"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-blue">Member desk</p><h2 className="mt-1 text-2xl font-semibold">Member conversations</h2></div><span className="rounded-full bg-bone px-3 py-1 text-xs">{memberMessages?.length||0} messages</span></div><div className="mt-4 space-y-4">{!memberMessages?.length&&<p className="text-sm text-ink/50">No member messages yet.</p>}{memberMessages?.map(m=>{const sender=byId.get(m.sender_id);const recipient=byId.get(m.recipient_id);const fromMember=!!sender?.email;return <article key={m.id} className="rounded-[24px] border border-blue/10 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="font-semibold">{fromMember?(sender?.full_name||sender?.email||"Member"):"SPERART team"}</p><p className="text-xs text-ink/45">{new Date(m.created_at).toLocaleString("en-NG")}</p></div><span className={`rounded-full px-3 py-1 text-xs ${fromMember?"bg-gold text-navy":"bg-bone"}`}>{fromMember?"Member → SPERART":"SPERART → Member"}</span></div><p className="mt-3 whitespace-pre-line text-sm leading-6">{m.body}</p>{fromMember&&<form action={replyMember} className="mt-4 rounded-2xl bg-bone/50 p-3"><input type="hidden" name="recipient_id" value={m.sender_id}/><textarea name="body" className="field min-h-24" placeholder={`Reply to ${sender?.full_name||"this member"}…`}/><div className="mt-2 flex justify-end"><button className="btn btn-blue !px-4 !py-2">Reply in SPERART</button></div></form>}</article>})}</div></section>
+ <section><div className="flex items-end justify-between"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-blue">Public enquiries</p><h2 className="mt-1 text-2xl font-semibold">Website messages</h2></div></div><div className="mt-4 space-y-4">{!inquiries?.length&&<p className="text-sm text-ink/50">No messages yet.</p>}{inquiries?.map(m=><article key={m.id} className="rounded-[24px] border border-blue/10 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-center justify-between gap-2"><p className="font-semibold">{m.name} <span className="font-normal text-ink/50">{m.email}</span></p><span className="text-xs text-ink/40">{m.status==="new"?"New":"Handled"}</span></div><p className="mt-3 whitespace-pre-line text-sm leading-6">{m.message}</p><div className="mt-4 flex flex-wrap gap-2"><a className="btn btn-blue !px-4 !py-2" href={`mailto:${m.email}?subject=${encodeURIComponent("Re: your message to SPERART")}`}>Reply by email</a>{m.status==="new"&&<form action={markHandled}><input type="hidden" name="id" value={m.id}/><SubmitButton className="btn border border-gold !px-4 !py-2" pending="Updating…">Mark handled</SubmitButton></form>}</div></article>)}</div></section>
+ </div>;
 }
