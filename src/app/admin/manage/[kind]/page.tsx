@@ -18,7 +18,7 @@ export default async function Manage({ params, searchParams }: { params: { kind:
     <>
       <h1 className="text-3xl font-semibold">{k.label}</h1>
       {searchParams.saved && <p role="status" className="mt-4 rounded-xl border border-gold bg-white p-3">Saved.</p>}
-      {searchParams.error && <p role="alert" className="mt-4 rounded-xl border border-red-300 bg-white p-3">Could not save. Check that the database update was run.</p>}
+      {searchParams.error && <p role="alert" className="mt-4 rounded-xl border border-red-300 bg-white p-3">{searchParams.error === "1" ? "Could not save." : searchParams.error}</p>}
       <form key={cur?.id ?? "new"} action={saveRecord} className="card mt-6 space-y-3">
         <input type="hidden" name="_kind" value={params.kind} /><input type="hidden" name="_id" value={cur?.id ?? ""} />
         <h2 className="text-xl font-semibold text-blue">{cur ? "Edit" : "Add new"}</h2>

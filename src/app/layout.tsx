@@ -1,9 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Splash from "@/components/Splash";
-import CookieBanner from "@/components/CookieBanner";
-import Spar from "@/components/Spar";
-import WhatsApp from "@/components/WhatsApp";
+import SiteChrome from "@/components/SiteChrome";
 import { getSettings } from "@/lib/settings";
 import { site } from "@/config/site";
 const desc = "SPERART, the Society of Percussive Art: percussion music, rhythm education, performance, research and community.";
@@ -22,7 +20,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: 'try{if(localStorage.getItem("sp-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}' }} /></head><body className="font-sans antialiased">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "WebSite", name: "SPERART", url: "https://sperart.org", creator: { "@type": "Person", name: site.developer.name, ...(site.developer.url ? { url: site.developer.url } : {}) } }) }} />
-      <Splash />{children}<WhatsApp number={s.contact.whatsapp} /><Spar /><CookieBanner />
+      <Splash />{children}<SiteChrome whatsapp={s.contact.whatsapp} />
     </body></html>
   );
 }

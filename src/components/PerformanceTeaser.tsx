@@ -1,9 +1,9 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import { latestVideos } from "@/lib/public";
 import { storage } from "@/lib/storage";
 /** Homepage strip: the three newest performance videos uploaded in Admin > Media. */
 export default async function PerformanceTeaser() {
-  const { data } = await supabaseServer().from("media").select("id,path,title").eq("kind", "video").order("created_at", { ascending: false }).limit(3);
-  if (!data?.length) return null;
+  const data = await latestVideos();
+  if (!data.length) return null;
   return (
     <section className="bg-bone px-5 py-24 md:px-12">
       <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">Watch our performances</h2>

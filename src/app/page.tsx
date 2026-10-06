@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Particles from "@/components/Particles";
 import ScrollFx from "@/components/ScrollFx";
 import VideoPlaylist from "@/components/VideoPlaylist";
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 const words = ["Percussion", "Rhythm", "Culture", "Education", "Performance", "Community", "Research"];
 const what = [
   ["Percussion education", "Lessons from first strike to advanced technique."],
@@ -23,13 +23,13 @@ export default async function Home() {
   return (
     <main>
       <ScrollFx /><Header />
-      <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy">
+      <section className="relative flex min-h-[85svh] items-end overflow-hidden bg-navy md:min-h-[90svh]">
         <div className="hero-vid absolute inset-0"><VideoPlaylist sources={vids} /></div>
         <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/25" />
         <Particles />
         <div className="hero-copy relative max-w-4xl px-5 pb-24 text-white md:px-12 md:pb-32">
           <p className="rise text-gold">Welcome to sperart.org</p>
-          <h1 className="rise neon-hero mt-3 text-5xl font-semibold leading-[1.05] tracking-tight md:text-8xl" style={{ animationDelay: ".15s" }}>{h.title ?? "Rhythm is our language."}</h1>
+          <h1 className="rise neon-hero mt-3 text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-7xl" style={{ animationDelay: ".15s" }}>{h.title ?? "Rhythm is our language."}</h1>
           <p className="rise mt-6 max-w-xl text-lg text-white/85" style={{ animationDelay: ".3s" }}>{h.subtitle ?? "Percussion, culture and music education. Learn, listen and take part."}</p>
           <div className="rise mt-9 flex flex-wrap gap-4" style={{ animationDelay: ".45s" }}>
             <a href={h.cta_href ?? "#what"} className="btn btn-blue">{h.cta_label ?? "Explore SPERART"}</a>

@@ -36,7 +36,7 @@ export default function Metronome() {
       <p className="mt-3 text-5xl font-semibold">{bpm} <span className="text-lg font-normal text-ink/60">BPM</span></p>
       <div className="mt-3 flex items-center gap-3">
         <button className="btn border border-gold !px-4 !py-2" onClick={() => setBpm((b) => Math.max(40, b - 1))} aria-label="Slower">−</button>
-        <input type="range" min={40} max={220} value={bpm} onChange={(e) => setBpm(+e.target.value)} className="w-full accent-[#1E5BFF]" aria-label="Tempo" />
+        <input type="range" min={40} max={220} value={bpm} onChange={(e) => setBpm(+e.target.value)} className="w-full accent-[#0F52FF]" aria-label="Tempo" />
         <button className="btn border border-gold !px-4 !py-2" onClick={() => setBpm((b) => Math.min(220, b + 1))} aria-label="Faster">+</button>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-4">

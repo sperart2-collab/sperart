@@ -21,7 +21,7 @@ export async function saveRecord(f: FormData) {
     ? await sb.from(k.table).update(row).eq("id", id)
     : await sb.from(k.table).insert({ ...row, slug: `${slugify(row.title ?? "") || "item"}-${Math.random().toString(36).slice(2, 6)}` });
   revalidatePath("/", "layout");
-  redirect(`/admin/manage/${kind}?${error ? "error=1" : "saved=1"}`);
+  redirect(`/admin/manage/${kind}?${error ? "error=" + encodeURIComponent(error.message) : "saved=1"}`);
 }
 export async function deleteRecord(f: FormData) {
   const kind = String(f.get("_kind")), k = kinds[kind];
@@ -31,8 +31,9 @@ export async function deleteRecord(f: FormData) {
   redirect(`/admin/manage/${kind}`);
 }
 export async function setMemberStatus(f: FormData) {
-  await supabaseServer().rpc("set_member_status", { uid: String(f.get("uid")), new_status: String(f.get("status")) });
+  const { error } = await supabaseServer().rpc("set_member_status", { uid: String(f.get("uid")), new_status: String(f.get("status")) });
   revalidatePath("/admin/members");
+  redirect(`/admin/members?${error ? "error=" + encodeURIComponent(error.message) : "ok=1"}`);
 }
 export async function createDraft(f: FormData) {
   const kind = String(f.get("type")), k = kinds[kind];
@@ -45,5 +46,5 @@ export async function createDraft(f: FormData) {
     : { ...common, summary: g("summary"), body: g("body"), level: ["Beginner", "Intermediate", "Advanced"].includes(g("level")) ? g("level") : "Beginner", category: g("category") === "Rudiment" ? "Rudiment" : "Lesson" };
   const { error } = await supabaseServer().from(k.table).insert(row);
   revalidatePath("/", "layout");
-  redirect(`/admin/manage/${kind}?${error ? "error=1" : "saved=1"}`);
+  redirect(`/admin/manage/${kind}?${error ? "error=" + encodeURIComponent(error.message) : "saved=1"}`);
 }

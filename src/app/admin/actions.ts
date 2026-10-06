@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { sections } from "@/config/content";
@@ -12,6 +12,7 @@ export async function saveSection(f: FormData) {
   for (const [name] of sec.fields) value[name] = String(f.get(name) ?? "");
   const { error } = await supabaseServer().from("site_settings").upsert({ key, value, updated_at: new Date().toISOString() });
   revalidatePath("/", "layout");
+  revalidateTag("settings");
   redirect(`/admin/content?saved=${error ? "error" : key}`);
 }
 export async function addHeroVideo(url: string) {
@@ -19,6 +20,7 @@ export async function addHeroVideo(url: string) {
   const videos = [...lines(s.hero.videos), url].join("\n");
   await supabaseServer().from("site_settings").upsert({ key: "hero", value: { ...s.hero, videos } });
   revalidatePath("/", "layout");
+  revalidateTag("settings");
 }
 export async function markHandled(f: FormData) {
   await supabaseServer().from("inquiries").update({ status: "handled" }).eq("id", String(f.get("id")));
