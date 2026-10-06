@@ -40,10 +40,10 @@ export default function Spar() {
   const lastUser = [...msgs].reverse().find((m) => m.role === "user")?.content ?? "";
   return (
     <>
-      <button onClick={() => setOpen(!open)} aria-label="Chat with Spar" className="btn btn-blue fixed bottom-5 right-5 z-[80] !h-14 !w-14 !rounded-full !p-0 text-sm">{open ? "✕" : "Spar"}</button>
+      <button onClick={() => setOpen(!open)} aria-label="Chat with Spar" className="fixed bottom-5 right-5 z-[80] grid h-14 w-14 place-items-center overflow-hidden rounded-full border border-gold bg-navy shadow-[0_0_24px_rgba(15,82,255,.45)]">{open ? <span className="text-xl text-white">✕</span> : <img src="/emblem.png" alt="SPERART AI" className="h-full w-full object-cover" />}</button>
       {open && (
         <section className="fixed inset-x-3 bottom-24 z-[80] flex h-[70vh] max-h-[34rem] flex-col overflow-hidden rounded-2xl border border-blue/20 bg-white shadow-2xl md:inset-x-auto md:right-5 md:w-96">
-          <div className="flex items-center gap-2 bg-navy px-4 py-3 text-white"><span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_10px_#FFC93C]" /><strong>Spar</strong><span className="text-sm text-white/60">SPERART assistant</span></div>
+          <div className="flex items-center gap-3 bg-navy px-4 py-3 text-white"><span className="grid h-9 w-9 overflow-hidden rounded-xl border border-gold/40"><img src="/emblem.png" alt="SPERART AI" className="h-full w-full object-cover" /></span><div><strong>SPERART AI</strong><span className="ml-2 text-sm text-white/60">Spar</span></div></div>
           <div className="flex-1 space-y-3 overflow-y-auto p-4 text-sm">
             {msgs.map((m, i) => <p key={i} className={`max-w-[85%] rounded-2xl px-4 py-2 ${m.role === "user" ? "ml-auto bg-blue text-white" : "bg-bone"}`}>{m.content}</p>)}
             {busy && <p className="text-ink/50">Spar is typing…</p>}

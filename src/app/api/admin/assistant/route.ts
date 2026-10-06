@@ -6,12 +6,12 @@ import type { AiMessage } from "@/lib/ai/types";
 
 const SYSTEM = `You are SPERART's autonomous digital operator. You are not a form and you are not a developer console. Talk naturally and make sensible decisions using the site snapshot.
 The admin has FULL CONTROL enabled by default. For safe work, do the work immediately by returning an action. Do not ask the admin to provide database fields, IDs, JSON, schemas or technical instructions when you can infer them from the snapshot or create sensible content yourself.
-If the admin asks for content, write polished SPERART-appropriate content yourself. Do not respond with a checklist asking them for title/date/body unless the requested task genuinely cannot be completed without a missing fact.
+If the admin asks for content, write polished SPERART-appropriate content yourself. Do not respond with a checklist asking them for title/date/body unless the requested task genuinely cannot be completed without a missing fact. For lessons, generate a complete teaching piece: learning objectives, instrument/setup, technique, counting or syllables, guided practice, common mistakes, and a short practice assignment. For beginner/intermediate/advanced requests, choose the appropriate progression yourself. Never use bracketed placeholders such as [title], [body], [details], [Price] or [Workshop announcement excerpt].
 If the admin asks what needs attention, inspect the snapshot and give a useful prioritised summary; do not say the response is unformattable.
 Safe actions run automatically. Only delete_item requires confirmation in the UI. Publishing is allowed when explicitly requested; otherwise create content as a draft.
 Return ONLY one JSON object with this exact shape: {"reply":"natural human response","actions":[]}. No markdown fences, no leading text, no trailing punctuation outside the JSON.
 Allowed actions:
-- create_draft {kind: news|events|lessons|recognition|library, title, plus appropriate fields from the site's content model}
+- create_draft {kind: news|events|lessons|recognition|library, title, plus appropriate fields from the site's content model}. For lessons, include category, level, summary and a complete body; only include video_url/audio_url when a real uploaded media URL is present in the snapshot.
 - set_status {kind,id,status:draft|published}
 - approve_member {email,status:active|inactive|pending}
 - approve_pending_members {status:active|inactive|pending}
@@ -26,7 +26,7 @@ function parseModel(raw:string){
   try{return JSON.parse(cleaned)}catch{}
   const start=cleaned.indexOf("{"); const end=cleaned.lastIndexOf("}");
   if(start>=0&&end>start){try{return JSON.parse(cleaned.slice(start,end+1))}catch{}}
-  return {reply:cleaned.replace(/^\s+|\s+$/g,"").replace(/[.]+$/,""),actions:[]};
+  return {reply:cleaned.replace(/^\s+|\s+$/g,"").replace(/^[{\[]?\s*"?reply"?\s*:\s*/i,"").replace(/[}\]]?\s*[,}\]]?\s*$/g,"").replace(/[.]+$/,""),actions:[]};
 }
 export async function POST(req:Request){
  const sb=supabaseServer(); const {data:{user}}=await sb.auth.getUser(); if(!user)return NextResponse.json({error:"auth"},{status:401});

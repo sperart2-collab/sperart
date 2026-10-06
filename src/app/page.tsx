@@ -1,4 +1,5 @@
 import { getSettings, lines } from "@/lib/settings";
+import { supabaseServer } from "@/lib/supabase/server";
 import Footer from "@/components/Footer";
 import PerformanceTeaser from "@/components/PerformanceTeaser";
 import { site } from "@/config/site";
@@ -18,6 +19,7 @@ const what = [
 ];
 export default async function Home() {
   const s = await getSettings();
+  const { data: academyLessons } = await supabaseServer().from("lessons").select("slug,title,summary,level").eq("status", "published").order("created_at", { ascending: false }).limit(9);
   const h = s.hero;
   const vids = lines(h.videos).length ? lines(h.videos) : site.heroVideos;
   return (
@@ -51,7 +53,15 @@ export default async function Home() {
       <section className="px-5 py-24 md:px-12">
         <h2 className="reveal text-4xl font-semibold tracking-tight md:text-6xl">Academy</h2>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {["Beginner", "Intermediate", "Advanced"].map((l, i) => <div key={l} className="card reveal" style={{ transitionDelay: `${i * 120}ms` }}><h3 className="text-xl font-semibold text-blue">{l}</h3><p className="mt-2 text-ink/70">Lessons coming soon.</p></div>)}
+          {["Beginner", "Intermediate", "Advanced"].map((level, i) => {
+            const lesson = (academyLessons ?? []).find((x) => x.level === level);
+            return <a key={level} href={lesson ? `/academy/${lesson.slug}` : "/academy"} className="card reveal block transition hover:-translate-y-1" style={{ transitionDelay: `${i * 120}ms` }}>
+              <p className="text-xs font-bold uppercase tracking-[.2em] text-blue">{level}</p>
+              <h3 className="mt-2 text-xl font-semibold">{lesson?.title ?? `${level} percussion studies`}</h3>
+              <p className="mt-2 text-ink/70">{lesson?.summary ?? "Technique, rhythm reading, practice and musical development."}</p>
+              <span className="mt-4 inline-block text-sm font-semibold text-blue">Explore level →</span>
+            </a>;
+          })}
         </div>
         <div className="reveal mt-10 flex flex-wrap gap-4"><a href="/academy" className="btn btn-blue">Explore the Academy</a><a href="/join" className="btn border border-gold">Become a member</a></div>
       </section>

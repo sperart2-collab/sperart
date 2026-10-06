@@ -9,10 +9,16 @@ export default async function Academy() {
   const all = (data ?? []) as L[];
   return (
     <Shell>
-      <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">Academy</h1>
-      <p className="mt-3 text-ink/70">Rudiments and lessons from beginner to advanced.</p>
+      <div className="max-w-3xl">
+        <p className="text-xs font-bold uppercase tracking-[.25em] text-blue">SPERART Academy</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-6xl">Learn the language of rhythm.</h1>
+        <p className="mt-4 text-lg leading-8 text-ink/70">A structured percussion curriculum covering technique, rhythm reading, rudiments, ensemble playing, improvisation and Nigerian and wider African drum traditions.</p>
+      </div>
+      <div className="mt-8 grid gap-4 md:grid-cols-3">
+        {[["Djembe & hand percussion", "Technique, tone, bass, slap, accompaniment and ensemble control."], ["Gongo & talking-drum traditions", "Pitch, tension, phrase, call-and-response and musical language, taught with respect for local terminology and practice."], ["Bàtá, dùndún & drum families", "Explore the roles, sounds and ensemble thinking behind Nigerian drum traditions."]].map(([title, body]) => <article key={title} className="card"><h2 className="font-semibold text-blue">{title}</h2><p className="mt-2 text-sm leading-6 text-ink/70">{body}</p></article>)}
+      </div>
       <div className="mt-8 max-w-xl"><Metronome /></div>
-      {!all.length && <p className="mt-12 text-ink/70">Lessons are coming soon.</p>}
+      {!all.length && <p className="mt-12 text-ink/70">Your curriculum is being prepared in the Academy editor.</p>}
       {[["Rudiment", "Rudiments"], ["Lesson", "Lessons"]].map(([cat, label]) => {
         const items = all.filter((l) => l.category === cat);
         if (!items.length) return null;
