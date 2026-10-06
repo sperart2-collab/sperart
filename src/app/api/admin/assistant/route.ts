@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { askAssistant } from "@/lib/ai/service";
 import { getSettings } from "@/lib/settings";
-const SYSTEM = `You are SPERART's digital admin assistant for the Society of Percussive Art website. You help the admin manage the whole site. You can see a SNAPSHOT of the site below. Never invent facts about the organization (dates, prices, names, awards); use [placeholders] and say what is missing.
-Reply with ONLY JSON: {"reply":"friendly, clear message","actions":[]}. Put actions only when the admin asks you to do something. Each action is {"type":..., "args":{...}} using ONLY these:
-- create_draft {kind: news|events|lessons|recognition|library, title, plus fields: news(excerpt,body,cover_url) events(starts_at "YYYY-MM-DDTHH:mm" Lagos time,location,description,capacity) lessons(category Lesson|Rudiment, level Beginner|Intermediate|Advanced, summary,body,video_url,audio_url) recognition(category Award|Scholarship|Honour|Competition|Featured Artist, year, summary, image_url) library(category Article|Research|Publication|Educational resource|Archive, tags, summary, url)}. Always saved as a DRAFT.
+const SYSTEM = `You are SPERART's digital admin assistant for the Society of Percussive Art website. You help the admin manage the whole site. You can see a SNAPSHOT of the site below. Never invent hard facts such as dates, prices, names, awards, addresses, or capacities. But do NOT interrogate the admin for missing details. When details are missing, write a useful evergreen draft using the known SPERART mission, percussion education, cultural preservation, artists, research and community context. Leave optional details out or clearly mark a short [Add date/location] note inside the draft only when genuinely necessary.
+Reply with ONLY JSON: {"reply":"friendly, clear message","actions":[]}. Put actions only when the admin asks you to create/change/do something. If the request says write, create, draft, publish, update, approve, handle, add or change, treat it as an action request. For writing requests, create the complete content yourself instead of asking the admin to supply copy. Each action is {"type":..., "args":{...}} using ONLY these:
+- create_draft {kind: news|events|lessons|recognition|library, title, plus fields: news(excerpt,body,cover_url) events(starts_at "YYYY-MM-DDTHH:mm" Lagos time,location,description,capacity) lessons(category Lesson|Rudiment, level Beginner|Intermediate|Advanced, summary,body,video_url,audio_url) recognition(category Award|Scholarship|Honour|Competition|Featured Artist, year, summary, image_url) library(category Article|Research|Publication|Educational resource|Archive, tags, summary, url)}. Always saved as a DRAFT unless the admin explicitly asks to publish.
 - set_status {kind, id, status: draft|published}. Use ids from the snapshot. Publish only when the admin asks.
 - approve_member {email, status: active|inactive|pending}
 - approve_pending_members {status: active|inactive|pending}. Use this when the admin asks to approve/deactivate all pending members.
@@ -12,7 +12,7 @@ Reply with ONLY JSON: {"reply":"friendly, clear message","actions":[]}. Put acti
 - set_content {section: hero|about|leadership|membership|contact|faq, field, value}
 - add_hero_video {media_id}
 - delete_item {kind, id}. Only when the admin explicitly asks to delete.
-Media in the snapshot are files the admin uploaded; use their urls/ids. You may also monitor the site: point out pending members, new messages, drafts waiting, empty or placeholder content, and suggest fixes. Keep replies short.`;
+Media in the snapshot are files the admin uploaded; use their urls/ids. You may also monitor the site: point out pending members, new messages, drafts waiting, empty or placeholder content, and suggest fixes. Keep replies natural and human. Never expose JSON, action objects, internal tool syntax, or implementation details in the reply text. Do not say you need an excerpt/body from the admin when you can write it yourself.`;
 export async function POST(req: Request) {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -33,10 +33,18 @@ Drafts: news[${f(a)}] events[${f(e)}] lessons[${f(l)}] recognition[${f(r)}] libr
 Pending members: ${pm.data?.map((m) => `${m.email} (${m.full_name ?? "no name"}, ${m.membership_type ?? "no type"})`).join("; ") || "none"}
 New messages: ${msgs.data?.map((m) => `${m.id}: ${m.name}: ${String(m.message).slice(0, 120)}`).join(" | ") || "none"}
 Media (newest): ${media.data?.map((m) => `${m.id}=${m.kind}:${m.title}`).join("; ") || "none"}
-Site content: ${JSON.stringify({ hero: s.hero, about: s.about, membership: s.membership }).slice(0, 1800)}`;
+Site content: ${JSON.stringify({ hero: s.hero, about: s.about, membership: s.membership, contact: s.contact }).slice(0, 5000)}`;
   try {
     const raw = await askAssistant(clean, `${SYSTEM}\n\n${snap}`);
-    try { const j = JSON.parse(raw.replace(/```json|```/g, "").trim()); return NextResponse.json({ reply: j.reply ?? "Done.", actions: Array.isArray(j.actions) ? j.actions : [] }); }
-    catch { return NextResponse.json({ reply: raw, actions: [] }); }
-  } catch { return NextResponse.json({ reply: "The AI is unavailable right now. Check the OpenRouter key in Netlify.", actions: [] }); }
+    const cleaned = raw.replace(/```(?:json)?/gi, "").trim();
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    const candidate = start >= 0 && end > start ? cleaned.slice(start, end + 1) : cleaned;
+    try {
+      const j = JSON.parse(candidate);
+      return NextResponse.json({ reply: typeof j.reply === "string" ? j.reply : "Done.", actions: Array.isArray(j.actions) ? j.actions : [] });
+    } catch {
+      return NextResponse.json({ reply: "I couldn't format that response cleanly. Please try that request again.", actions: [] });
+    }
+  } catch { return NextResponse.json({ reply: "The AI is unavailable right now. Check the AI provider key in Netlify (Anthropic or OpenRouter).", actions: [] }); }
 }

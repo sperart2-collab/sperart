@@ -31,7 +31,8 @@ export async function deleteRecord(f: FormData) {
   redirect(`/admin/manage/${kind}`);
 }
 export async function setMemberStatus(f: FormData) {
-  const { error } = await supabaseServer().rpc("set_member_status", { uid: String(f.get("uid")), new_status: String(f.get("status")) });
+  const uid = String(f.get("uid")), status = String(f.get("status"));
+  const { error } = await supabaseServer().rpc("set_member_status", { uid, new_status: status });
   revalidatePath("/admin/members");
   redirect(`/admin/members?${error ? "error=" + encodeURIComponent(error.message) : "ok=1"}`);
 }
