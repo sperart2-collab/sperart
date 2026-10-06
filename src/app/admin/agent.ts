@@ -34,6 +34,18 @@ async function exec(sb: SB, a: Action): Promise<string> {
       const { error } = await sb.from(k.table).update({ status: g.status }).eq("id", g.id);
       return error ? `Failed: ${error.message}` : `Set ${g.kind} to ${g.status}.`;
     }
+    case "approve_pending_members": {
+      const status = ["active", "inactive", "pending"].includes(String(g.status)) ? String(g.status) : "active";
+      const { data: members, error: listError } = await sb.from("profiles").select("user_id,email").eq("status", "pending");
+      if (listError) return `Failed: ${listError.message}`;
+      if (!members?.length) return "There are no pending members.";
+      const results: string[] = [];
+      for (const m of members) {
+        const { error } = await sb.rpc("set_member_status", { uid: m.user_id, new_status: status });
+        results.push(error ? `Failed ${m.email ?? m.user_id}: ${error.message}` : `${m.email ?? m.user_id} → ${status}`);
+      }
+      return `Updated ${members.length} member(s): ${results.join(", ")}`;
+    }
     case "approve_member": {
       const { data: p } = await sb.from("profiles").select("user_id").ilike("email", String(g.email)).maybeSingle();
       if (!p) return `No member with email ${g.email}.`;

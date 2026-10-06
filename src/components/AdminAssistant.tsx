@@ -5,12 +5,12 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 type M = { role: "user" | "assistant"; content: string; pending?: Action[]; results?: string[] };
 const ideas = ["What needs my attention?", "Write an announcement for our percussion workshop", "Create a beginner rhythm lesson", "Approve all pending members"];
 const label = (a: Action) => `${a.type.replace(/_/g, " ")}: ${a.args?.title ?? a.args?.email ?? a.args?.field ?? a.args?.kind ?? a.args?.id ?? ""}`;
-/** Chat-style digital admin. Ask-first by default; Full control lets it run actions itself (deletes still need your approval). */
+/** Chat-style digital admin. Ask-first by default; Full control is enabled by default; destructive deletes still need approval. */
 export default function AdminAssistant() {
   const [msgs, setMsgs] = useState<M[]>([]);
-  const [text, setText] = useState(""), [busy, setBusy] = useState(false), [full, setFull] = useState(false);
+  const [text, setText] = useState(""), [busy, setBusy] = useState(false), [full, setFull] = useState(true);
   const end = useRef<HTMLDivElement>(null);
-  useEffect(() => { setFull(localStorage.getItem("sp-ai-full") === "1"); }, []);
+  useEffect(() => { const saved = localStorage.getItem("sp-ai-full"); setFull(saved === null ? true : saved === "1"); }, []);
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs, busy]);
   const toggle = () => { const v = !full; setFull(v); localStorage.setItem("sp-ai-full", v ? "1" : "0"); };
   async function send(t: string) {

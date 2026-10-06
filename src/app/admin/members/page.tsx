@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { setMemberStatus } from "../records";
+import SubmitButton from "@/components/SubmitButton";
 export const dynamic = "force-dynamic";
 export default async function Members({ searchParams }: { searchParams: { ok?: string; error?: string } }) {
   const { data } = await supabaseServer().from("profiles").select("*").order("created_at", { ascending: false });
@@ -16,7 +17,7 @@ export default async function Members({ searchParams }: { searchParams: { ok?: s
               <p className="text-sm text-ink/70">{m.membership_type || "No type chosen"} · {m.phone || "no phone"} · <strong>{m.status}</strong></p></div>
             <div className="flex gap-2">
               {[["active", "Approve", "btn btn-blue"], ["inactive", "Deactivate", "btn border border-gold"]].map(([s, l, c]) => (
-                <form key={s} action={setMemberStatus}><input type="hidden" name="uid" value={m.user_id} /><input type="hidden" name="status" value={s} /><button className={`${c} !px-4 !py-2`}>{l}</button></form>
+                <form key={s} action={setMemberStatus}><input type="hidden" name="uid" value={m.user_id} /><input type="hidden" name="status" value={s} /><SubmitButton className={`${c} !px-4 !py-2`} pending="Working…">{l}</SubmitButton></form>
               ))}
             </div>
           </div>

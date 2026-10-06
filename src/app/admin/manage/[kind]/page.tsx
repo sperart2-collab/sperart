@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { kinds } from "@/config/manage";
 import { saveRecord, deleteRecord } from "../../records";
 import ConfirmDelete from "@/components/ConfirmDelete";
+import SubmitButton from "@/components/SubmitButton";
 export const dynamic = "force-dynamic";
 export default async function Manage({ params, searchParams }: { params: { kind: string }; searchParams: { edit?: string; saved?: string; error?: string } }) {
   const k = kinds[params.kind];
@@ -30,7 +31,7 @@ export default async function Manage({ params, searchParams }: { params: { kind:
               : <input name={name} type={type === "datetime" ? "datetime-local" : type === "number" ? "number" : "text"} defaultValue={val(name, type)} className="field mt-1" />}
           </label>
         ))}
-        <div className="flex gap-3"><button className="btn btn-blue">Save</button>{cur && <a href={`/admin/manage/${params.kind}`} className="btn border border-gold">Cancel</a>}</div>
+        <div className="flex gap-3"><SubmitButton>Save</SubmitButton>{cur && <a href={`/admin/manage/${params.kind}`} className="btn border border-gold">Cancel</a>}</div>
       </form>
       <div className="mt-8 space-y-3">
         {data?.map((r) => (

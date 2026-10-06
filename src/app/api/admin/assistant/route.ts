@@ -7,6 +7,7 @@ Reply with ONLY JSON: {"reply":"friendly, clear message","actions":[]}. Put acti
 - create_draft {kind: news|events|lessons|recognition|library, title, plus fields: news(excerpt,body,cover_url) events(starts_at "YYYY-MM-DDTHH:mm" Lagos time,location,description,capacity) lessons(category Lesson|Rudiment, level Beginner|Intermediate|Advanced, summary,body,video_url,audio_url) recognition(category Award|Scholarship|Honour|Competition|Featured Artist, year, summary, image_url) library(category Article|Research|Publication|Educational resource|Archive, tags, summary, url)}. Always saved as a DRAFT.
 - set_status {kind, id, status: draft|published}. Use ids from the snapshot. Publish only when the admin asks.
 - approve_member {email, status: active|inactive|pending}
+- approve_pending_members {status: active|inactive|pending}. Use this when the admin asks to approve/deactivate all pending members.
 - handle_message {id}
 - set_content {section: hero|about|leadership|membership|contact|faq, field, value}
 - add_hero_video {media_id}

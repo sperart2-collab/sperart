@@ -8,7 +8,7 @@ export default function Header({ solid = false }: { solid?: boolean }) {
   return (
     <header className={`site ${solid ? "solid " : ""}fixed inset-x-0 top-0 z-50`}>
       <div className="flex items-center justify-between px-5 py-3 md:px-12">
-        <a href="/" className="flex items-center gap-2"><img src="/emblem.png" alt="" className="h-9 w-auto" /><span className="font-semibold tracking-[.2em]">SPERART</span></a>
+        <a href="/" className="flex items-center gap-2"><img src="/emblem.png" alt="" className="h-14 w-14 object-contain md:h-16 md:w-16" /><span className="font-semibold tracking-[.2em]">SPERART</span></a>
         <nav className="hidden items-center gap-7 text-[15px] lg:flex xl:gap-10">
           {main.map(([t, h]) => <a key={h} href={h} className="nl">{t}</a>)}
           <details className="relative"><summary className="nl cursor-pointer list-none">More ▾</summary>

@@ -15,7 +15,7 @@ export default function Splash() {
   return (
     <div className={`fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-navy transition-opacity duration-500 ${s === "fade" ? "opacity-0" : ""}`}>
       <Particles />
-      <div className="relative"><img src="/emblem.png" alt="" className="mx-auto mb-6 h-20 w-auto drop-shadow-[0_0_18px_rgba(76,141,255,.8)]" /><LetterLoader /></div>
+      <div className="relative"><img src="/emblem.png" alt="" className="mx-auto mb-6 h-40 w-40 object-contain drop-shadow-[0_0_18px_rgba(76,141,255,.8)]" /><LetterLoader /></div>
     </div>
   );
 }
