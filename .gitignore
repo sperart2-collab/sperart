@@ -2,3 +2,16 @@ node_modules
 .next
 .env.local
 
+
+# Local secrets and environment configuration
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# Generated Next.js and Cloudflare output
+.next/
+.open-next/
+.wrangler/
+out/

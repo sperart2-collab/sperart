@@ -31,8 +31,16 @@ async function exec(sb: SB, a: Action): Promise<string> {
     case "set_status": {
       const k = kinds[g.kind];
       if (!k || !["draft", "published"].includes(g.status)) return "Invalid request.";
-      const { error } = await sb.from(k.table).update({ status: g.status }).eq("id", g.id);
-      return error ? `Failed: ${error.message}` : `Set ${g.kind} to ${g.status}.`;
+      const { data: updated, error } = await sb
+        .from(k.table)
+        .update({ status: g.status })
+        .eq("id", g.id)
+        .select("id,title")
+        .maybeSingle();
+      if (error) return `Failed: ${error.message}`;
+      if (!updated) return `No matching ${g.kind} item was updated. It may already be changed, or the ID may be invalid.`;
+      revalidatePath("/", "layout");
+      return `Set ${g.kind} "${updated.title ?? g.id}" to ${g.status}.`;
     }
     case "approve_pending_members": {
       const status = ["active", "inactive", "pending"].includes(String(g.status)) ? String(g.status) : "active";

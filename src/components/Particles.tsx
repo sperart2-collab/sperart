@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-/** Floating ember particles. Pauses when tab hidden; skipped if reduced motion. */
+/** Soft lilac and pink floating particles. Pauses when tab hidden; skipped if reduced motion. */
 export default function Particles() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Particles() {
         p.y -= p.v; p.x += Math.sin(t / 1500 + p.d) * 0.3;
         if (p.y < -5) { p.y = h + 5; p.x = Math.random() * w; }
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7);
-        const col = p.d > 3 ? "#FFC93C" : "#4C8DFF"; ctx.fillStyle = col; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.fill();
+        const col = p.d > 3 ? "#F5C9E8" : "#B79AE8"; ctx.fillStyle = col; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.fill();
       }
       raf = requestAnimationFrame(tick);
     };

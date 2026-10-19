@@ -9,6 +9,19 @@ export default function AuthForm({ initial }: { initial: "signin" | "signup" }) 
   const [msg, setMsg] = useState(""), [ok, setOk] = useState(false), [busy, setBusy] = useState(false);
   const [show, setShow] = useState(false), [pw, setPw] = useState(""), [shake, setShake] = useState(0);
   const router = useRouter();
+  function destination(fallback: string) {
+    const next = new URLSearchParams(window.location.search).get("next");
+    return next && next.startsWith("/") && !next.startsWith("//") ? next : fallback;
+  }
+  async function signedInDestination() {
+    const sb = supabaseBrowser();
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      const { data: admin } = await sb.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
+      return destination(admin ? "/admin" : "/account");
+    }
+    return destination("/account");
+  }
   const fail = (m: string) => { setOk(false); setMsg(m); setShake((s) => s + 1); };
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); setBusy(true); setMsg("");
@@ -16,11 +29,11 @@ export default function AuthForm({ initial }: { initial: "signin" | "signup" }) 
     if (mode === "signin") {
       const { error } = await sb.auth.signInWithPassword({ email, password: pw });
       if (error) fail(error.message === "Email not confirmed" ? "Please confirm your email first. Check your inbox." : error.message);
-      else { router.push("/account"); router.refresh(); }
+      else { router.push(await signedInDestination()); router.refresh(); }
     } else {
       const { data, error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: `${location.origin}/auth/callback` } });
       if (error) fail(error.message);
-      else if (data.session) { router.push("/account"); router.refresh(); }
+      else if (data.session) { router.push(await signedInDestination()); router.refresh(); }
       else { setOk(true); setMsg("Account created. Check your email and click the link to confirm."); }
     }
     setBusy(false);
